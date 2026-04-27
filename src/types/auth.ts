@@ -1,11 +1,11 @@
-export type HabitTrackerUser = {
+export type User = {
   id: string;
   email: string;
   password: string;
   createdAt: string;
 };
 
-export type HabitTrackerSession = {
+export type Session = {
   userId: string;
   email: string;
 };
