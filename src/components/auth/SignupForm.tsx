@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Storage } from "@/lib/storage";
 import type { User, Session } from "@/types/auth";
+import { signUp, useAuth } from "@/lib/auth";
 
 interface FormFields {
   email: string;
@@ -37,6 +38,7 @@ function validateFields(fields: FormFields): FormErrors {
 
 export default function SignupForm() {
   const router = useRouter();
+  const { setSession } = useAuth();
 
   const [fields, setFields] = useState<FormFields>({
     email: "",
@@ -69,36 +71,13 @@ export default function SignupForm() {
     setErrors({});
 
     try {
-      const existingUsers = Storage.getUsers();
-      const normalizedEmail = fields.email.trim().toLowerCase();
-
-      // Duplicate email check — maps to spec: "User already exists"
-      const duplicate = existingUsers.some(
-        (u) => u.email.toLowerCase() === normalizedEmail,
-      );
-      if (duplicate) {
-        setErrors({ form: "User already exists" });
+      const result = signUp(fields.email, fields.password);
+      if (!result.success) {
+        setErrors({ form: result.error });
         return;
       }
 
-      // Create user
-      const newUser: User = {
-        id: crypto.randomUUID(),
-        email: normalizedEmail,
-        password: fields.password,
-        createdAt: new Date().toISOString(),
-      };
-
-      Storage.saveUsers([...existingUsers, newUser]);
-
-      // Create session
-      const session: Session = {
-        userId: newUser.id,
-        email: newUser.email,
-      };
-
-      Storage.saveSession(session);
-
+      setSession(result.session); // sync content
       router.push("/dashboard");
     } finally {
       setIsLoading(false);
