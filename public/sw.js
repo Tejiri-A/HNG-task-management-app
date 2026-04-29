@@ -13,13 +13,22 @@ const SHELL_ROUTES = [
 
 // ─── Install — cache the app shell ───────────────────────────────
 self.addEventListener("install", (event) => {
+  console.log("SW: Install event");
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(SHELL_ROUTES))
-      // Force this SW to become active immediately
-      // without waiting for existing tabs to close
-      .then(() => self.skipWaiting()),
+      .then((cache) => {
+        console.log("SW: Pre-caching shell routes");
+        return cache.addAll(SHELL_ROUTES).catch(err => {
+          console.error("SW: Pre-caching failed:", err);
+          // Even if pre-caching fails, we want the SW to continue 
+          // so it can cache items on-demand during fetch events.
+        });
+      })
+      .then(() => {
+        console.log("SW: Install complete, skipWaiting");
+        return self.skipWaiting();
+      }),
   );
 });
 
