@@ -33,6 +33,9 @@ export default function RootLayout({
       lang="en"
       className={`${jakartaSans.variable} ${dmSans.variable} h-full antialiased`}
     >
+      <link rel="manifest" href="/manifest.json" />
+      <meta name="theme-color" content="#3b82f6" />
+      <link rel="apple-touch-icon" href="/icons-192x192.png" />
       <>
         <PWARegistration />
         <body className="flex flex-col min-h-full">
