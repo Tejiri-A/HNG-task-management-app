@@ -17,7 +17,11 @@ const get = <T>(key: string, defaultValue: T): T => {
 // Safely write data to local storage
 const set = <T>(key: string, value: T): void => {
   if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
+  if (value === null || value === undefined) {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 };
 
 export const Storage = {
