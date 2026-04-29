@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth";
 interface HabitFormProps {
   initialHabit?: Habit;
   onSave: (data: {
-    userId:string;
+    userId:string | undefined;
     name: string;
     description: string;
     frequency: "daily";
